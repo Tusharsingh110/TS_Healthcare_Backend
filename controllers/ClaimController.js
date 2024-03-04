@@ -38,6 +38,23 @@ exports.updateClaimById = async (req, res) => {
   }
 };
 
+
+exports.updateClaimStatusById = async (req, res) => {
+  try {
+    const claimId = req.params.claimId;
+    const updatedClaimData = req.body;
+    // console.log(updatedClaimData)
+    // Update only the status field of the claim with the new value
+    const updatedClaim = await ClaimsServices.updateClaimStatusById(claimId,  updatedClaimData );
+    
+    res.json(updatedClaim);
+  } catch (error) {
+    console.error("Error updating claim:", error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+
 exports.deleteClaimById = async (req, res) => {
   try {
     const claimId = req.params.claimId;
@@ -76,6 +93,7 @@ exports.getAllClaims = async (req, res) => {
     const user = await User.findById(userId);
 
     // Check if the user exists and is an admin
+    console.log(user.username + ' ' + user.isAdmin)
     if (!user || !user.isAdmin) {
       return res.status(403).json({ message: "Unauthorized access" });
     }

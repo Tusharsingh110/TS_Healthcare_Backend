@@ -8,6 +8,7 @@ router.post('/createClaim', authenticateJWT, ClaimsController.createClaim);
 router.get('/getClaimById/:claimId', authenticateJWT, ClaimsController.getClaimById);
 router.get('/claimsByUserId/:userId', authenticateJWT, ClaimsController.getClaimsByUserId);
 router.put('/updateClaim/:claimId', authenticateJWT, ClaimsController.updateClaimById);
+router.put('/updateClaimStatusById/:claimId', authenticateJWT, ClaimsController.updateClaimStatusById);
 router.delete('/deleteClaimById/:claimId', authenticateJWT, ClaimsController.deleteClaimById);
 
 // Route to fetch all claims
