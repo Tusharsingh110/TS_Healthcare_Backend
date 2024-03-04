@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ClaimsController = require('../controllers/ClaimController');
-const authenticateJWT = require('../middlewares/authenticateJWT'); // Import the authenticateJWT middleware
+const authenticateJWT = require('../middlewares/authenticateJWT');
 
 // Claims CRUD operations
 router.post('/createClaim', authenticateJWT, ClaimsController.createClaim);

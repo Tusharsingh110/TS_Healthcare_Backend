@@ -58,7 +58,6 @@ exports.getClaimById = async (claimId) => {
 
 exports.updateClaimStatusById = async (claimId, updatedClaim) => {
   try {
-    // console.log('hello')
     // Check if the claim exists
     const claim = await Claim.findById(claimId);
     if (!claim) {
@@ -77,8 +76,6 @@ exports.updateClaimStatusById = async (claimId, updatedClaim) => {
     // Update the claim status
     claim.status = status;
     const savedClaim = await claim.save();
-    // console.log("savedClaim")
-    // console.log(savedClaim)
     // If the status is approved, update the user's policies array
     if (status === "approved") {
       const policyId = claim.policyId;
@@ -99,7 +96,6 @@ exports.updateClaimStatusById = async (claimId, updatedClaim) => {
       // Deduct the claim amount from the policy's claimable amount
       user.policies[policyIndex].claimableAmount -= claimAmount;
       // Save the updated user data
-      // console.log(user)
       await user.save();
     }
 
@@ -109,68 +105,6 @@ exports.updateClaimStatusById = async (claimId, updatedClaim) => {
   }
 };
 
-
-// exports.updateClaimById = async (claimId, updatedClaimData) => {
-//   console.log(updatedClaimData)
-//   try {
-//     // Extract userId, policyId, and status from updatedClaimData
-//     const { userId, policyId, amount } = updatedClaimData;
-
-//     // Check if the user exists
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       throw new Error("User does not exist");
-//     }
-
-//     // Check if the policy exists
-//     const policy = await Policy.findById(policyId);
-//     if (!policy) {
-//       throw new Error("Policy does not exist");
-//     }
-
-//     // Check if the claim exists
-//     const claim = await Claim.findById(claimId);
-//     if (!claim) {
-//       throw new Error("Claim does not exist");
-//     }
-
-//     // // Validate the status field
-//     // const allowedStatusValues = ["pending", "approved", "rejected"];
-//     // if (status && !allowedStatusValues.includes(status)) {
-//     //   throw new Error("Invalid status value");
-//     // }
-
-//     // // If the status is approved, deduct the claim amount from the policy's claimable amount
-//     // if (status === "approved") {
-//     //   // Find the policy object within the user's policies array that matches the policy ID of the approved claim
-//     //   const policyIndex = user.policies.findIndex(
-//     //     (p) => p.policyId.toString() === policyId
-//     //   );
-//     //   if (policyIndex === -1) {
-//     //     throw new Error("Policy not found in user's policies");
-//     //   }
-//     //   // Deduct the claim amount from the policy's claimable amount
-//     //   user.totalClaimAmount += amount;
-//     //   user.policies[policyIndex].claimableAmount -= amount;
-//     //   // Save the updated user data
-//     //   await user.save();
-//     // }
-
-//     // Update the claim
-//     const updatedClaim = await Claim.findByIdAndUpdate(
-//       claimId,
-//       claim.userId,
-//       claim,policyId,
-//       amount,
-//       claim.status,
-//       { new: true }
-//     );
-//     console.log(updatedClaim)
-//     return updatedClaim;
-//   } catch (error) {
-//     throw new Error("Could not update claim: " + error.message);
-//   }
-// };
 
 exports.updateClaimById = async (claimId, updatedClaimData) => {
   try {
