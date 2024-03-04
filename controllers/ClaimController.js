@@ -70,6 +70,7 @@ exports.deleteClaimById = async (req, res) => {
 exports.getClaimsByUserId = async (req, res) => {
   try {
     const userId = req.params.userId;
+    // console.log(userId)
     const claims = await ClaimsServices.getClaimsByUserId(userId);
     res.json(claims);
   } catch (error) {
@@ -83,7 +84,7 @@ exports.getAllClaims = async (req, res) => {
   try {
     // Receive userId from the request body
     const { userId } = req.body;
-    console.log(userId)
+    // console.log(userId)
     // Check if userId is provided
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
@@ -93,7 +94,7 @@ exports.getAllClaims = async (req, res) => {
     const user = await User.findById(userId);
 
     // Check if the user exists and is an admin
-    console.log(user.username + ' ' + user.isAdmin)
+    // console.log(user.username + ' ' + user.isAdmin)
     if (!user || !user.isAdmin) {
       return res.status(403).json({ message: "Unauthorized access" });
     }

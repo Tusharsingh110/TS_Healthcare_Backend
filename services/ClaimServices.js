@@ -58,6 +58,7 @@ exports.getClaimById = async (claimId) => {
 
 exports.updateClaimStatusById = async (claimId, updatedClaim) => {
   try {
+    // console.log('hello')
     // Check if the claim exists
     const claim = await Claim.findById(claimId);
     if (!claim) {
@@ -81,13 +82,16 @@ exports.updateClaimStatusById = async (claimId, updatedClaim) => {
     // If the status is approved, update the user's policies array
     if (status === "approved") {
       const policyId = claim.policyId;
+      // console.log('the id' + policyId)
       const user = await User.findById(claim.userId);
       if (!user) {
         throw new Error("User does not exist");
       }
+
       const policyIndex = user.policies.findIndex(
-        (p) => p.policyId.toString() === policyId
+        (p) => p.policyId.toString() === policyId.toString()
       );
+      // console.log('policyIndex ' + policyIndex)
       if (policyIndex === -1) {
         throw new Error("Policy not found in user's policies");
       }
@@ -95,6 +99,7 @@ exports.updateClaimStatusById = async (claimId, updatedClaim) => {
       // Deduct the claim amount from the policy's claimable amount
       user.policies[policyIndex].claimableAmount -= claimAmount;
       // Save the updated user data
+      // console.log(user)
       await user.save();
     }
 
