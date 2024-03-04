@@ -85,7 +85,7 @@ const login = async (email, password) => {
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
-    return { message: 'Login successful', token };
+    return { message: 'Login successful', token ,isAdmin: user.isAdmin };
   } catch (error) {
     throw new Error(error.message);
   }
