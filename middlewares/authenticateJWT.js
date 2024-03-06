@@ -2,27 +2,34 @@
 
 const jwt = require('jsonwebtoken');
 
-
 const authenticateJWT = (req, res, next) => {
-  // Extract the JWT token from the request headers
   const authHeader = req.headers.authorization;
 
-  // Check if token is present
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Unauthorized: No token provided' });
   }
 
-  // Extract the token without the "Bearer " prefix
   const token = authHeader.split(' ')[1];
 
-  // Verify the JWT token
   jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
     if (err) {
       return res.status(401).json({ error: 'Unauthorized: Invalid token' });
     } else {
-      // Attach the decoded token payload to the request object for further processing
-      req.user = decodedToken;
-      next(); // Move to the next middleware or route handler
+      // Check if the user is an admin (if isAdmin attribute is true)
+      if (decodedToken.isAdmin === true) {
+        // If the user is an admin, attach the decoded token payload to the request object
+        req.user = decodedToken;
+        next(); // Move to the next middleware or route handler
+      } else {
+        // Check if the userId in the request body matches the userId decoded from the token
+        if (req.body.userId && req.body.userId !== decodedToken.id) {
+          return res.status(403).json({ error: 'Forbidden: Cannot perform action for another user' });
+        }
+        
+        // Attach the decoded token payload to the request object for further processing
+        req.user = decodedToken;
+        next(); // Move to the next middleware or route handler
+      }
     }
   });
 };

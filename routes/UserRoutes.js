@@ -6,9 +6,9 @@ const authenticateJWT = require('../middlewares/authenticateJWT'); // Import the
 
 // User CRUD operations
 // Sign-up route
-router.post('/signup', UserController.register);
+router.post('/signup', UserController.signup);
 // Log-in route
-router.post('/login', UserController.signIn);
+router.post('/login', UserController.login);
 router.get('/allUsers', UserController.getAllUsers);
 router.get('/getUserById/:userId', authenticateJWT ,UserController.getUserById);
 router.put('/updateUserById/:userId', authenticateJWT ,UserController.updateUserById);
