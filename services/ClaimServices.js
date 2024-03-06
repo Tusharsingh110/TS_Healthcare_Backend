@@ -1,8 +1,13 @@
 const Claim = require("../models/Claim");
 const User = require("../models/User");
 const Policy = require("../models/Policy");
+const { databaseResponseTimeHistogram } = require("../utils/metrics");
 
 exports.createClaim = async (claimData) => {
+  const metricsLabels = {
+    operation: "Create Claim"
+  }
+  const timer = databaseResponseTimeHistogram.startTimer();
   try {
     // Extract userId, policyId, and amount from claimData
     const { userId, policyId, amount } = claimData;
@@ -36,9 +41,10 @@ exports.createClaim = async (claimData) => {
       userPolicy.claimableAmount -= amount;
       await user.save();
     }
-
+    timer({...metricsLabels,success: true})
     return savedClaim;
   } catch (error) {
+    timer({...metricsLabels,success: false  })
     throw new Error("Could not create claim: " + error.message);
   }
 };
