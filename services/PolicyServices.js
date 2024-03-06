@@ -60,13 +60,26 @@ exports.deletePolicyById = async (policyId) => {
 
 exports.getAllPoliciesByUserId = async (userId) => {
   try {
-    const user = await User.findOne({ _id: userId });
+    // Fetch all policies from the Policy model
+    const allPolicies = await Policy.find({});
+
+    // Fetch the user's policies array from the User model
+    const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");
     }
-    return user.policies;
+    const userPolicies = user.policies;
+
+    // Add a new key-value pair to each policy indicating if it's bought by the user
+    const modifiedPolicies = allPolicies.map((policy) => ({
+      ...policy.toObject(),
+      bought: userPolicies.some((userPolicy) => userPolicy.policyId.toString() === policy._id.toString())
+    }));
+
+    // Return the modified policies array
+    return modifiedPolicies;
   } catch (error) {
-    throw new Error("Could not fetch policies by user ID: " + error.message);
+    throw new Error("Error getting policies by user ID: " + error.message);
   }
 };
 
@@ -82,6 +95,12 @@ exports.buyPolicy = async (userId, policyId) => {
     const policy = await Policy.findById(policyId);
     if (!policy) {
       throw new Error("Policy not found");
+    }
+    
+    // Check if the user has already bought the policy
+    const isAlreadyBought = user.policies.some((userPolicy) => userPolicy.policyId.toString() === policyId);
+    if (isAlreadyBought) {
+      throw new Error(`Policy already bought by ${user.username}.`);
     }
 
     // Calculate expiration date based on policy duration
