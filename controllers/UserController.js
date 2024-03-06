@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const axios = require('axios')
 
 const getAllUsers = async (req, res) => {
   try {
@@ -52,7 +53,15 @@ const deleteUserById = async (req, res) => {
 
 const signup = async (req, res) => {
   try {
-    const { username, email, password, dob, isAdmin } = req.body;
+    const { username, email, password, dob, isAdmin, recaptchaValue } = req.body;
+
+    // Verify reCAPTCHA
+    const secret = process.env.RECAPTCHA_SECRET_KEY;
+    const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.API_KEY}&response=${recaptchaValue}`);
+    
+    if (!response.data.success) {
+      throw new Error('reCAPTCHA verification failed');
+    }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -78,6 +87,7 @@ const signup = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 const login = async (req, res) => {
   try {
