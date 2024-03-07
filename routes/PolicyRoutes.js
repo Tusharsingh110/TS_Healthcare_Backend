@@ -2,14 +2,16 @@ const express = require("express");
 const router = express.Router();
 const PolicyController = require("../controllers/PolicyController");
 const authenticateJWT = require("../middlewares/authenticateJWT");
+const authenticateAdminJWT = require("../middlewares/authenticateAdminJWT");
 
 // Policy CRUD operations
 router.get("/showAllPolicies", PolicyController.getAllPolicies);
-router.post("/createPolicy", authenticateJWT, PolicyController.createPolicy);
+router.post("/createPolicy", authenticateAdminJWT, PolicyController.createPolicy);
 router.post("/buyPolicy", authenticateJWT, PolicyController.buyPolicy);
-router.get("/policiesByUserId/:userId", authenticateJWT, PolicyController.getAllPoliciesByUserId);
+router.post("/policiesByUserId/", authenticateJWT, PolicyController.getAllPoliciesByUserId);
 router.get("/getPolicyById/:policyId", authenticateJWT, PolicyController.getPolicyById);
-router.put("/updatePolicyById/:policyId", authenticateJWT, PolicyController.updatePolicyById);
-router.delete("/deletePolicyById/:policyId", authenticateJWT, PolicyController.deletePolicyById);
+router.put("/updatePolicyById/:policyId", authenticateAdminJWT, PolicyController.updatePolicyById);
+router.delete("/deletePolicyById/:policyId", authenticateAdminJWT, PolicyController.deletePolicyById);
+router.post("/deletePolicyForUser/", authenticateJWT, PolicyController.deletePolicyForUser);
 
 module.exports = router;

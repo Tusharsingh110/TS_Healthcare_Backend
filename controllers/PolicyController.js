@@ -1,5 +1,6 @@
 const Policy = require("../models/Policy");
 const User = require("../models/User");
+const Claim = require("../models/Claim");
 
 exports.createPolicy = async (req, res) => {
   try {
@@ -70,7 +71,7 @@ exports.deletePolicyById = async (req, res) => {
 
 exports.getAllPoliciesByUserId = async (req, res) => {
   try {
-    const userId = req.params.userId;
+    const userId = req.body.userId;
     const allPolicies = await Policy.find({});
     const user = await User.findById(userId);
     if (!user) {
@@ -117,3 +118,37 @@ exports.buyPolicy = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+exports.deletePolicyForUser = async (req, res) => {
+    try {
+      const { userId, policyId } = req.body;
+
+      // Find the user
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Find the index of the policy to delete
+      const policyIndex = user.policies.findIndex(policy => policy.policyId.toString() === policyId);
+
+      if (policyIndex === -1) {
+        return res.status(404).json({ error: 'Policy not found for the user' });
+      }
+
+      // Remove the policy from the user's policies array
+      user.policies.splice(policyIndex, 1);
+
+      // Save the updated user
+      await user.save();
+
+      // Delete claims related to this policy with status 'pending'
+      await Claim.deleteMany({ policyId:policyId, userId: userId });
+
+      return res.status(200).json({ message: 'Policy deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting policy:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  };
