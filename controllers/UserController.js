@@ -44,6 +44,7 @@ const deleteUserById = async (req, res) => {
   try {
     const { userId } = req.params;
     await User.findByIdAndDelete(userId);
+    // await Claim.deleteMany({userId:userId});
     res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Error deleting user by ID:', error);

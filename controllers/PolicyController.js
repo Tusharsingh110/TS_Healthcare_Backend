@@ -9,10 +9,16 @@ exports.createPolicy = async (req, res) => {
     const savedPolicy = await newPolicy.save();
     res.status(201).json(savedPolicy);
   } catch (error) {
-    console.error("Error creating policy:", error);
-    res.status(400).json({ error: error.message });
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.policyName) {
+      // If the error is due to a duplicate policyName, handle it here
+      res.status(400).json({ error: 'Policy name already exists' });
+    } else {
+      console.error("Error creating policy:", error);
+      res.status(400).json({ error: error.message });
+    }
   }
 };
+
 
 exports.getAllPolicies = async (req, res) => {
   try {
