@@ -63,6 +63,28 @@ const signup = async (req, res) => {
       throw new Error('reCAPTCHA verification failed');
     }
 
+    // Backend validation for username, email, and password
+    if (!username || !email || !password) {
+      throw new Error('All fields are required');
+    }
+    if (password.length < 8) {
+      throw new Error('Password must be at least 8 characters long');
+    }
+    // Additional validation for password complexity
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      throw new Error('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character');
+    }
+
+    // Backend validation for age verification
+    const dobDate = new Date(dob);
+    const currentDate = new Date();
+    const ageDifference = currentDate.getFullYear() - dobDate.getFullYear();
+    const isUnder18 = ageDifference < 18 || (ageDifference === 18 && currentDate.getMonth() < dobDate.getMonth()) || (ageDifference === 18 && currentDate.getMonth() === dobDate.getMonth() && currentDate.getDate() < dobDate.getDate());
+    if (isUnder18) {
+      throw new Error('You must be at least 18 years old to register');
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       throw new Error('User already exists');
@@ -87,6 +109,7 @@ const signup = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 
 const login = async (req, res) => {

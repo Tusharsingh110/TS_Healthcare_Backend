@@ -35,10 +35,16 @@ const UserSchema = new Schema({
     },
     password: {
         type: String,
-        required: [true,'Provide a password'],
-        minlength: 8,
-        // select: false dont set to false as it cant match when authenticating     
-    },
+        required: [true, 'Provide a password'],
+        minlength: [8, 'Password must be at least 8 characters long'],
+        validate: {
+          validator: function(value) {
+            // Custom validation logic for password
+            return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/.test(value);
+          },
+          message: props => `${props.value} is not a valid password! Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.`
+        }
+      },      
     dob: {
         type: Date,
         required: [true,'Please provide your DOB']
