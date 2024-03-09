@@ -129,7 +129,6 @@ exports.updateClaimStatusById = async (req, res) => {
     // Update the claim status
     claim.status = status;
     let savedClaim =claim;
-    // console.log(savedClaim)
     // If the status is approved, update the user's policies array
     if (status === "approved") {
       const policyId = claim.policyId;
@@ -169,7 +168,7 @@ exports.updateClaimStatusById = async (req, res) => {
 
 exports.deleteClaimById = async (req, res) => {
   try {
-    const claimId = req.params.claimId;
+    const claimId = req.body.claimId;
     await Claim.findByIdAndDelete(claimId);
     res.json({ message: "Claim deleted successfully" });
   } catch (error) {

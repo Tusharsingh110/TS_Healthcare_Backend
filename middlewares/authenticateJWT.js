@@ -17,7 +17,6 @@ const authenticateUserJWT = (req, res, next) => {
       if (req.body.userId && req.body.userId.toString() !== decodedToken.id) {
         return res.status(403).json({ error: 'Forbidden: Cannot perform action for another user' });
       }
-      
       // Attach the decoded token payload to the request object for further processing
       req.user = decodedToken;
       next(); // Move to the next middleware or route handler

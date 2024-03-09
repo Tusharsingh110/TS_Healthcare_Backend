@@ -63,17 +63,31 @@ exports.updatePolicyById = async (req, res) => {
 
 exports.deletePolicyById = async (req, res) => {
   try {
-    const policyId = req.params.policyId;
+    const policyId = req.body.policyId;
+    if (policyId === undefined) {
+      throw new Error("Provide Policy ID.");
+    }
+    
+    // Check if any user has bought the policy
+    const userWithPolicy = await User.findOne({ policies: { $elemMatch: { policyId: policyId } } });
+    if (userWithPolicy) {
+      throw new Error("Policy has been bought by a user. Cannot delete.");
+    }
+
+    // Delete the policy from the Policy collection
     const policy = await Policy.findByIdAndDelete(policyId);
     if (!policy) {
       throw new Error("Policy not found");
     }
+
     res.json({ message: "Policy deleted successfully" });
   } catch (error) {
     console.error("Error deleting policy:", error);
     res.status(400).json({ error: error.message });
   }
 };
+
+
 
 exports.getAllPoliciesByUserId = async (req, res) => {
   try {
@@ -83,10 +97,10 @@ exports.getAllPoliciesByUserId = async (req, res) => {
     if (!user) {
       throw new Error("User not found");
     }
-    const userPolicies = user.policies;
+    const policies = user.policies;
     const modifiedPolicies = allPolicies.map((policy) => ({
       ...policy.toObject(),
-      bought: userPolicies.some((userPolicy) => userPolicy.policyId.toString() === policy._id.toString())
+      bought: policies.some((userPolicy) => userPolicy.policyId.toString() === policy._id.toString())
     }));
     res.json(modifiedPolicies);
   } catch (error) {
