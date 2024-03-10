@@ -179,7 +179,7 @@ exports.deleteClaimById = async (req, res) => {
 
 exports.getClaimsByUserId = async (req, res) => {
   try {
-    const userId = req.params.userId;
+    const userId = req.user.id;
     const claims = await Claim.find({ userId });
     res.json(claims);
   } catch (error) {
