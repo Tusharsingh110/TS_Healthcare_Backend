@@ -13,10 +13,6 @@ const authenticateUserJWT = (req, res, next) => {
     if (err) {
       return res.status(401).json({ error: 'Unauthorized: Invalid token' });
     } else {
-      // Check if the userId in the request body matches the userId decoded from the token
-      if (req.body.userId && req.body.userId.toString() !== decodedToken.id) {
-        return res.status(403).json({ error: 'Forbidden: Cannot perform action for another user' });
-      }
       // Attach the decoded token payload to the request object for further processing
       req.user = decodedToken;
       next(); // Move to the next middleware or route handler

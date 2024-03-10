@@ -88,10 +88,10 @@ exports.deletePolicyById = async (req, res) => {
 };
 
 
-
+// for buying
 exports.getAllPoliciesByUserId = async (req, res) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.user.id;
     const allPolicies = await Policy.find({});
     const user = await User.findById(userId);
     if (!user) {

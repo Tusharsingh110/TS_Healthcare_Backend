@@ -8,7 +8,7 @@ const authenticateAdminJWT = require("../middlewares/authenticateAdminJWT");
 router.get("/allPolicies", PolicyController.getAllPolicies);
 router.post("/createPolicy", authenticateAdminJWT, PolicyController.createPolicy);
 router.post("/buyPolicy", authenticateJWT, PolicyController.buyPolicy);
-router.post("/policiesByUserId/", authenticateJWT, PolicyController.getAllPoliciesByUserId);
+router.get("/policiesByUserId/", authenticateJWT, PolicyController.getAllPoliciesByUserId);
 router.get("/getPolicyById/:policyId", authenticateJWT, PolicyController.getPolicyById);
 router.put("/updatePolicyById/:policyId", authenticateAdminJWT, PolicyController.updatePolicyById);
 router.post("/deletePolicyById/", authenticateAdminJWT, PolicyController.deletePolicyById);

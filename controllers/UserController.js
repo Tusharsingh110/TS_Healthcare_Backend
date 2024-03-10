@@ -1,7 +1,28 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Claim = require('../models/Claim');
 const axios = require('axios')
+
+const validateUserData = (username, email, dob) => {
+  const errors = {};
+
+  // Validate email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    errors.email = 'Please enter a valid email address';
+  }
+
+  // Validate date of birth
+  const currentDate = new Date();
+  const eighteenYearsAgo = new Date(currentDate.getFullYear() - 18, currentDate.getMonth(), currentDate.getDate());
+  if (new Date(dob) > eighteenYearsAgo) {
+    errors.dob = 'You must be at least 18 years old';
+  }
+
+  return errors;
+};
+
 
 const getAllUsers = async (req, res) => {
   try {
@@ -15,7 +36,7 @@ const getAllUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId  = req.user.id;
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");
@@ -27,24 +48,35 @@ const getUserById = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
-
-const updateUserById = async (req, res) => {
+const updateUser = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const userData = req.body;
-    const updatedUser = await User.findByIdAndUpdate(userId, userData, { new: true });
-    res.status(200).json(updatedUser);
+    // Validate request body
+    const { username, email, dob } = req.body;
+    const errors = validateUserData(username, email, dob);
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json({ errors });
+    }
+    const userId = req.user.id;
+    const userData = { username, email, dob };
+
+    // Update user
+    await User.findByIdAndUpdate(userId, userData);
+
+    // Respond with success message
+    res.status(200).json({ message: 'User updated successfully' });
   } catch (error) {
-    console.error('Error updating user by ID:', error);
+    console.error('Error updating user.', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
+
+
 const deleteUserById = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = req.user.id;
     await User.findByIdAndDelete(userId);
-    // await Claim.deleteMany({userId:userId});
+    await Claim.deleteMany({userId:userId});
     res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Error deleting user by ID:', error);
@@ -138,7 +170,7 @@ const login = async (req, res) => {
 module.exports = {
   getAllUsers,
   getUserById,
-  updateUserById,
+  updateUser,
   deleteUserById,
   signup,
   login

@@ -10,8 +10,8 @@ router.post('/signup', UserController.signup);
 // Log-in route
 router.post('/login', UserController.login);
 router.get('/allUsers', UserController.getAllUsers);
-router.get('/getUserById/:userId', authenticateJWT ,UserController.getUserById);
-router.put('/updateUserById/:userId', authenticateJWT ,UserController.updateUserById);
-router.delete('/deleteUserById/:userId', authenticateJWT ,UserController.deleteUserById);
+router.get('/getUserById/', authenticateJWT ,UserController.getUserById);
+router.put('/updateUser/', authenticateJWT ,UserController.updateUser);
+router.delete('/deleteUser/', authenticateJWT ,UserController.deleteUserById);
 
 module.exports = router;
