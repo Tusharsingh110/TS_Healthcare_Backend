@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Claim = require('../models/Claim');
@@ -123,7 +123,7 @@ const signup = async (req, res) => {
       throw new Error('User already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = password;
 
     const newUser = new User({
       username, 
@@ -153,7 +153,8 @@ const login = async (req, res) => {
       throw new Error('Invalid email or password');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    // const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await (password === user.password);
     if (!isPasswordValid) {
       throw new Error('Invalid email or password');
     }
